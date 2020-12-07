@@ -1,9 +1,10 @@
-FROM golang:alpine AS build
-RUN apk add --no-cache git wget build-base shellcheck
+FROM golang:1.14.10-alpine AS build
+RUN apk add --no-cache git wget build-base
 
 RUN mkdir /overlay
 COPY root/ /overlay/
-RUN find /overlay -type f | xargs shellcheck -e SC1008
+# No Shellcheck package in alpine for arm64
+#RUN find /overlay -type f | xargs shellcheck -e SC1008
 
 # From https://github.com/sourcelevel/engine-image-optim/blob/2de5967c666fc3f7f8f24e67c0c445da403a67ef/Dockerfile#L61-L64
 ENV JHEAD_VERSION=3.04
@@ -17,7 +18,7 @@ ENV GO111MODULE=on
 RUN go get github.com/perkeep/gphotos-cdp@e9d1979707191993f1c879ae93f8dd810697fd6e
 
 
-FROM oznu/s6-alpine:3.11
+FROM oznu/s6-alpine:3.11-aarch64
 LABEL maintainer="Jake Wharton <docker@jakewharton.com>"
 
 ENV \
